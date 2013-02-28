@@ -5,17 +5,17 @@ function clean() {
 }
 
 function compile_testdll {
-    mcs Demo.cs -target:library
-    mcs DemoTest.cs -reference:nunit.framework.dll -reference:Demo.dll -target:library
+    mcs Demo2.cs -target:library
+    mcs Demo2Test.cs -reference:nunit.framework.dll -reference:Demo2.dll -target:library
 }
 
 function build {
-    mcs Demo.cs
+    mcs Demo2.cs
 }
 
 function ut {
         compile_testdll && \
-        nunit-console2 DemoTest.dll
+        nunit-console2 Demo2Test.dll
 }
 
 function usage {
