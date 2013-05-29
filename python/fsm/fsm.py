@@ -34,7 +34,7 @@ class Transition:
 		return False
 		
 class FSM:
-	def __init__(self, transitions =None):
+	def __init__(self, transitions=[]):
 		self.active_state = None
 		self.transitions = {}
 		for t in transitions:
@@ -46,13 +46,18 @@ class FSM:
 	def stop(self):
 		self.active_state = None
 
+	def is_active(self):
+		return self.active_state != None
+
 	def add_transition(self, t):
 		if not self.transitions.has_key(t.src.name):
 			self.transitions[t.src.name] = []
 		self.transitions[t.src.name] += [t]
 
 	def get_transitions(self):
-		return self.transitions[self.active_state.name]
+		if self.active_state != None:
+			return self.transitions[self.active_state.name]
+		return []
 
 	def get_transition(self, event):
 		transitions = self.get_transitions()
@@ -63,15 +68,21 @@ class FSM:
 	def current_state(self):
 		return self.active_state
 
-	def step(self, args):
+	def set_state(self, dst, args=None):
+		t = Transition("", self.active_state, State(dst), True)
+		return t.execute(self, args)
+		
+	def step(self, args=None):
 		transitions = self.get_transitions()
 		for t in transitions:
-			if self.trigger(t, args):
+			if t.execute(self, args):
 				return True
 		return False
 
-	def trigger(self, t, args):
-		return t.execute(self, args)
+	def trigger(self, event, args=None):
+		t = self.get_transition(event);
+		if t:
+			return t.execute(self, args)
 		 
 	def update(self):
-		self.active_state.execute()
+		self.active_state.update()
